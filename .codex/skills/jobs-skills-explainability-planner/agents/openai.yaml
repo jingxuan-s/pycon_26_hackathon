@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jobs Skills Explainability Planner"
+  short_description: "Generate explanations and learning actions."
+  default_prompt: "Build explanations and learning action plans from skill gaps and K&A items."

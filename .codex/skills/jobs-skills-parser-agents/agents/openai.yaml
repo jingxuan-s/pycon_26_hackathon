@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jobs Skills Parser Agents"
+  short_description: "Parse resumes and job descriptions as stretch features."
+  default_prompt: "Build or refine parser agents for resume and job description skill evidence extraction."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jobs Skills Data Pipeline"
+  short_description: "Load and normalize SkillsFuture datasets."
+  default_prompt: "Build or update the SkillsFuture jobs-skills data pipeline."

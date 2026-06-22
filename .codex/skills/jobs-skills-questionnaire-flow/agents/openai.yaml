@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jobs Skills Questionnaire Flow"
+  short_description: "Design baseline and target-gap questionnaires."
+  default_prompt: "Build or refine the hybrid questionnaire flow for career pathway assessment."

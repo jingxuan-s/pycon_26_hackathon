@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jobs Skills Scoring Engine"
+  short_description: "Score user-role skill fit and gaps."
+  default_prompt: "Build or update deterministic skill suitability and gap scoring."

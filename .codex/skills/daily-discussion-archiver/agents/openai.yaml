@@ -1,0 +1,4 @@
+interface:
+  display_name: "Daily Discussion Archiver"
+  short_description: "Summarize daily collaboration and archive raw chat logs."
+  default_prompt: "Compact today's conversation into a daily discussion summary and archive the raw markdown transcript."

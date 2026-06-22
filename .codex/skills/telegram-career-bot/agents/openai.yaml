@@ -1,0 +1,4 @@
+interface:
+  display_name: "Telegram Career Bot"
+  short_description: "Implement Telegram MVP interface."
+  default_prompt: "Build or refine the Telegram bot interface for the career pathway MVP."

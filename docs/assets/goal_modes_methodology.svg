@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="820" viewBox="0 0 1100 820" role="img" aria-labelledby="title desc">
+  <title id="title">Choose goal mode scoring diagrams</title>
+  <desc id="desc">Four conceptual panels showing how Explore pathways, Advance roles, Search target role, and Paste JD use vectors, scoring, and graph logic.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#2563eb" />
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#15803d" />
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.14" />
+    </filter>
+  </defs>
+
+  <rect width="1100" height="820" fill="#f8fafc" />
+  <text x="550" y="42" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#0f172a">Choose Goal: How Each Mode Uses The Same Skill Vector</text>
+  <text x="550" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#475569">All modes start from the confirmed user skill vector. The target selection changes how candidates are discovered and explained.</text>
+
+  <g transform="translate(60,105)">
+    <rect x="0" y="0" width="475" height="300" rx="10" fill="#ffffff" stroke="#cbd5e1" filter="url(#shadow)" />
+    <text x="24" y="34" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">1. Explore pathways</text>
+    <text x="24" y="56" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Find nearby roles first, then re-rank by suitability.</text>
+
+    <g transform="translate(36,80)">
+      <line x1="25" y1="165" x2="250" y2="165" stroke="#334155" stroke-width="2" marker-end="url(#arrow)" />
+      <line x1="25" y1="165" x2="25" y2="20" stroke="#334155" stroke-width="2" marker-end="url(#arrow)" />
+      <line x1="25" y1="165" x2="110" y2="95" stroke="#334155" stroke-width="2" marker-end="url(#arrow)" />
+      <g fill="#bfdbfe" opacity="0.95">
+        <circle cx="65" cy="138" r="4" /><circle cx="86" cy="116" r="4" /><circle cx="112" cy="130" r="4" />
+        <circle cx="132" cy="95" r="4" /><circle cx="158" cy="112" r="4" /><circle cx="178" cy="72" r="4" />
+        <circle cx="202" cy="98" r="4" /><circle cx="220" cy="58" r="4" /><circle cx="236" cy="126" r="4" />
+        <circle cx="144" cy="150" r="4" /><circle cx="188" cy="145" r="4" /><circle cx="104" cy="72" r="4" />
+      </g>
+      <circle cx="58" cy="145" r="11" fill="#f97316" stroke="#9a3412" stroke-width="2" />
+      <text x="58" y="149" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#ffffff">U</text>
+      <circle cx="92" cy="121" r="9" fill="#2563eb" stroke="#1e3a8a" stroke-width="2" />
+      <circle cx="128" cy="98" r="9" fill="#2563eb" stroke="#1e3a8a" stroke-width="2" />
+      <circle cx="160" cy="116" r="9" fill="#2563eb" stroke="#1e3a8a" stroke-width="2" />
+      <path d="M61 142 C78 130, 88 124, 100 119" fill="none" stroke="#f97316" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow-green)" />
+    </g>
+
+    <rect x="285" y="96" width="160" height="128" rx="7" fill="#ecfdf5" stroke="#86efac" />
+    <text x="302" y="120" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#166534">Output</text>
+    <text x="302" y="142" font-family="Arial, sans-serif" font-size="12" fill="#166534">Top adjacent roles</text>
+    <text x="302" y="161" font-family="Arial, sans-serif" font-size="12" fill="#166534">Fit %, gaps, actions</text>
+    <text x="302" y="180" font-family="Arial, sans-serif" font-size="12" fill="#166534">Why each role appears</text>
+    <text x="302" y="199" font-family="Arial, sans-serif" font-size="12" fill="#166534">Vector distance stays internal</text>
+  </g>
+
+  <g transform="translate(565,105)">
+    <rect x="0" y="0" width="475" height="300" rx="10" fill="#ffffff" stroke="#cbd5e1" filter="url(#shadow)" />
+    <text x="24" y="34" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">2. Advance roles</text>
+    <text x="24" y="56" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Prefer higher-level roles in a similar sector or track.</text>
+
+    <line x1="70" y1="218" x2="375" y2="218" stroke="#cbd5e1" stroke-width="3" />
+    <line x1="110" y1="218" x2="110" y2="96" stroke="#94a3b8" stroke-width="2" />
+    <line x1="210" y1="218" x2="210" y2="72" stroke="#94a3b8" stroke-width="2" />
+    <line x1="310" y1="218" x2="310" y2="50" stroke="#94a3b8" stroke-width="2" />
+    <path d="M112 170 C150 150, 178 126, 206 104" fill="none" stroke="#15803d" stroke-width="3" marker-end="url(#arrow-green)" />
+    <path d="M212 104 C250 84, 278 70, 306 58" fill="none" stroke="#15803d" stroke-width="3" marker-end="url(#arrow-green)" />
+    <circle cx="110" cy="170" r="21" fill="#f97316" stroke="#9a3412" stroke-width="2" />
+    <circle cx="210" cy="104" r="21" fill="#2563eb" stroke="#1e3a8a" stroke-width="2" />
+    <circle cx="310" cy="58" r="21" fill="#2563eb" stroke="#1e3a8a" stroke-width="2" />
+    <text x="110" y="174" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">Now</text>
+    <text x="210" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">Next</text>
+    <text x="310" y="62" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">Lead</text>
+    <text x="76" y="246" font-family="Arial, sans-serif" font-size="12" fill="#334155">same or related track</text>
+    <rect x="318" y="142" width="124" height="78" rx="7" fill="#eff6ff" stroke="#bfdbfe" />
+    <text x="334" y="166" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">Filters</text>
+    <text x="334" y="185" font-family="Arial, sans-serif" font-size="12" fill="#1e3a8a">sector/track</text>
+    <text x="334" y="204" font-family="Arial, sans-serif" font-size="12" fill="#1e3a8a">manageable gaps</text>
+  </g>
+
+  <g transform="translate(60,445)">
+    <rect x="0" y="0" width="475" height="300" rx="10" fill="#ffffff" stroke="#cbd5e1" filter="url(#shadow)" />
+    <text x="24" y="34" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">3. Search target role</text>
+    <text x="24" y="56" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Compare directly against one selected dataset role.</text>
+
+    <circle cx="104" cy="154" r="30" fill="#f97316" stroke="#9a3412" stroke-width="2" />
+    <text x="104" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#ffffff">User</text>
+    <circle cx="346" cy="154" r="36" fill="#2563eb" stroke="#1e3a8a" stroke-width="2" />
+    <text x="346" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Target</text>
+    <text x="346" y="166" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Role</text>
+    <line x1="137" y1="154" x2="302" y2="154" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)" />
+    <text x="174" y="132" font-family="Arial, sans-serif" font-size="12" fill="#334155">direct suitability score</text>
+    <rect x="155" y="180" width="142" height="52" rx="7" fill="#fff7ed" stroke="#fed7aa" />
+    <text x="172" y="202" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#9a3412">Gap table</text>
+    <text x="172" y="220" font-family="Arial, sans-serif" font-size="12" fill="#9a3412">current vs target</text>
+  </g>
+
+  <g transform="translate(565,445)">
+    <rect x="0" y="0" width="475" height="300" rx="10" fill="#ffffff" stroke="#cbd5e1" filter="url(#shadow)" />
+    <text x="24" y="34" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">4. Paste job description</text>
+    <text x="24" y="56" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Parse the JD into target requirements, then compare.</text>
+
+    <rect x="48" y="104" width="124" height="72" rx="8" fill="#fff7ed" stroke="#fed7aa" />
+    <text x="110" y="132" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#9a3412">Resume</text>
+    <text x="110" y="153" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#9a3412">user vector</text>
+    <rect x="48" y="196" width="124" height="72" rx="8" fill="#eff6ff" stroke="#bfdbfe" />
+    <text x="110" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">JD</text>
+    <text x="110" y="245" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#1e3a8a">target vector</text>
+    <line x1="181" y1="140" x2="268" y2="178" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)" />
+    <line x1="181" y1="232" x2="268" y2="194" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow)" />
+    <rect x="278" y="143" width="142" height="84" rx="8" fill="#ecfdf5" stroke="#86efac" />
+    <text x="349" y="169" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#166534">Suitability</text>
+    <text x="349" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#166534">% fit</text>
+    <text x="349" y="208" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#166534">top gaps + plan</text>
+  </g>
+</svg>

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jobs Skills Pathway Graph"
+  short_description: "Build graph policies and pathway search."
+  default_prompt: "Build or refine the career pathway graph and Dijkstra policy logic."
