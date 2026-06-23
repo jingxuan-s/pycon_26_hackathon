@@ -300,7 +300,7 @@ class TelegramCareerBotService:
         buttons = tuple(InlineButton(str(row.unique_skill_title)[:54], "resume_add_select", str(row.skill_id)) for row in matches.itertuples(index=False)) + (
             InlineButton("Back to review", "resume_back_review", ""),
         )
-        lines = [f"Skill search: {query}", "SkillsFuture uses broad capability names. If you searched for a tool or tech stack, choose the closest broader skill below.", "Choose the skill to add:", ""]
+        lines = [f"Skill search: {query}", "SkillsFuture uses broad capability names. If you searched for a tool, tech stack, or work task, choose the closest broader skill below.", "Choose the skill to add:", ""]
         for index, row in enumerate(matches.itertuples(index=False), start=1):
             lines.append(f"{index}. {row.unique_skill_title}")
         return BotResponse("\n".join(lines), buttons)

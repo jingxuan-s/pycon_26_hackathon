@@ -246,6 +246,8 @@ def main() -> None:
     assert not aws_matches.empty and all("law" not in str(title).casefold() for title in aws_matches["unique_skill_title"]), "Tool search should not match substrings like laws"
     excel_matches = search_skills(context.skills, "excel", limit=5)
     assert not excel_matches.empty and all("excellence" not in str(title).casefold() for title in excel_matches["unique_skill_title"]), "Tool search should not match substrings like excellence"
+    tender_matches = search_skills(context.skills, "tender", limit=5)
+    assert not tender_matches.empty and str(tender_matches.iloc[0].unique_skill_title) == "Contract Preparation, Evaluation, Negotiation and Tendering", "Tender should suggest the broader contract preparation and tendering skill"
     reviewed = add_profile_skill(reviewed, context.skills, str(programming.iloc[0].skill_id), 3.0)
     assert reviewed.to_user_vector(), "Reviewed profile should produce user vector"
     checkpoint("review operations")
@@ -380,5 +382,4 @@ def write_pdf(path: Path, text: str) -> None:
 
 if __name__ == "__main__":
     main()
-
 

@@ -422,7 +422,7 @@ def search_skills(skills: pd.DataFrame, query: str, limit: int = 8) -> pd.DataFr
         + frame["alias_text"].astype(str)
     )
 
-    frame = frame.loc[frame["search_text"].map(lambda text: all(_search_text_contains_phrase(str(text), token) for token in tokens))]
+    frame = frame.loc[frame["search_text"].map(lambda text: all(_search_text_matches_query(str(text), token) for token in tokens))]
     if frame.empty:
         return frame.drop(columns=["search_text", "normalized_title", "normalized_description", "parser_alias_text", "manual_alias_text", "alias_text"], errors="ignore")
 
@@ -446,6 +446,48 @@ def _search_text_contains_phrase(text: str, phrase: str) -> bool:
     return re.search(rf"(?<![a-z0-9]){re.escape(phrase)}(?![a-z0-9])", text) is not None
 
 
+def _search_text_matches_query(text: str, query: str) -> bool:
+    if not query:
+        return False
+    if _search_text_contains_phrase(text, query):
+        return True
+    query_tokens = [token for token in query.split() if token]
+    text_tokens = [token for token in text.split() if token]
+    if not query_tokens or not text_tokens:
+        return False
+    return all(any(_search_tokens_match(query_token, text_token) for text_token in text_tokens) for query_token in query_tokens)
+
+
+def _search_tokens_match(query_token: str, text_token: str) -> bool:
+    if query_token == text_token:
+        return True
+    if len(query_token) < 4 or len(text_token) < 4:
+        return False
+    return bool(_search_token_roots(query_token) & _search_token_roots(text_token))
+
+
+def _search_token_roots(token: str) -> set[str]:
+    roots = {token}
+    if len(token) <= 4:
+        return roots
+    if token.endswith("ies") and len(token) > 5:
+        roots.add(token[:-3] + "y")
+    if token.endswith("ing") and len(token) > 6:
+        stem = token[:-3]
+        roots.add(stem)
+        if len(stem) > 2 and stem[-1] == stem[-2]:
+            roots.add(stem[:-1])
+    if token.endswith("ed") and len(token) > 5:
+        stem = token[:-2]
+        roots.add(stem)
+        roots.add(stem + "e")
+    if token.endswith("s") and not token.endswith("ss") and len(token) > 4:
+        roots.add(token[:-1])
+    if token.endswith("isation") and len(token) > 8:
+        roots.add(token[:-7] + "ise")
+    return roots
+
+
 def _skill_search_rank(row: Any, normalized_query: str, tokens: Sequence[str]) -> tuple[int, int]:
     title = str(row.normalized_title)
     description = str(row.normalized_description)
@@ -460,15 +502,19 @@ def _skill_search_rank(row: Any, normalized_query: str, tokens: Sequence[str]) -
         return (2, 0)
     if _search_text_contains_phrase(title, normalized_query):
         return (3, 0)
-    manual_token_matches = sum(1 for token in tokens if _search_text_contains_phrase(manual_aliases, token))
+    if _search_text_matches_query(title, normalized_query):
+        return (4, 0)
+    manual_token_matches = sum(1 for token in tokens if _search_text_matches_query(manual_aliases, token))
     if manual_token_matches:
-        return (4, -manual_token_matches)
-    alias_token_matches = sum(1 for token in tokens if _search_text_contains_phrase(aliases, token))
+        return (5, -manual_token_matches)
+    alias_token_matches = sum(1 for token in tokens if _search_text_matches_query(aliases, token))
     if alias_token_matches:
-        return (5, -alias_token_matches)
+        return (6, -alias_token_matches)
     if _search_text_contains_phrase(description, normalized_query):
-        return (6, 0)
-    return (7, 0)
+        return (7, 0)
+    if _search_text_matches_query(description, normalized_query):
+        return (8, 0)
+    return (9, 0)
 
 def _normalize_search_text(text: str) -> str:
     normalized = _normalize_for_match(str(text))
@@ -476,6 +522,9 @@ def _normalize_search_text(text: str) -> str:
         "modeling": "modelling",
         "visualization": "visualisation",
         "visualizations": "visualisations",
+        "visualize": "visualise",
+        "visualized": "visualised",
+        "visualizing": "visualising",
         "analyze": "analyse",
         "analyzing": "analysing",
         "optimization": "optimisation",
@@ -1671,8 +1720,4 @@ def _env_value(names: Iterable[str]) -> str | None:
 
 def pasted_jd_document(text: str) -> ExtractedDocument:
     return document_text_from_pasted_input(text, source_type="pasted_jd")
-
-
-
-
 
