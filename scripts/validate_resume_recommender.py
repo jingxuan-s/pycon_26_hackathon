@@ -236,6 +236,16 @@ def main() -> None:
     reviewed = remove_profile_item(reviewed, len(reviewed.items) - 1)
     programming = search_skills(context.skills, "Programming and Coding", limit=5)
     assert not programming.empty
+    python_matches = search_skills(context.skills, "python", limit=5)
+    assert not python_matches.empty and str(python_matches.iloc[0].unique_skill_title) == "Programming and Coding", "Python should suggest the broader SkillsFuture programming skill"
+    software_programming = search_skills(context.skills, "software programming", limit=5)
+    assert not software_programming.empty and str(software_programming.iloc[0].unique_skill_title) == "Programming and Coding", "Specific programming phrasing should map to the broader dataset skill"
+    power_bi = search_skills(context.skills, "power bi", limit=5)
+    assert not power_bi.empty and str(power_bi.iloc[0].unique_skill_title) == "Data Storytelling and Visualisation", "BI tools should suggest the broader visualisation skill"
+    aws_matches = search_skills(context.skills, "aws", limit=5)
+    assert not aws_matches.empty and all("law" not in str(title).casefold() for title in aws_matches["unique_skill_title"]), "Tool search should not match substrings like laws"
+    excel_matches = search_skills(context.skills, "excel", limit=5)
+    assert not excel_matches.empty and all("excellence" not in str(title).casefold() for title in excel_matches["unique_skill_title"]), "Tool search should not match substrings like excellence"
     reviewed = add_profile_skill(reviewed, context.skills, str(programming.iloc[0].skill_id), 3.0)
     assert reviewed.to_user_vector(), "Reviewed profile should produce user vector"
     checkpoint("review operations")
@@ -320,6 +330,7 @@ def main() -> None:
     report_path = write_result_report(context, reviewed, specific_result, "Validator specific role target.")
     report_text = report_path.read_text(encoding="utf-8")
     assert "Suitability" in report_text
+    assert "https://jobsandskills.skillsfuture.gov.sg/frameworks/interactive-skills-frameworks" in report_text
     assert "PRIVATE_FULL_RESUME_TEXT_SHOULD_NOT_PERSIST" not in report_text
     assert "PRIVATE_JOB_DESCRIPTION_TEXT_SHOULD_NOT_PERSIST" not in report_text
     checkpoint("wrote report")
@@ -369,10 +380,5 @@ def write_pdf(path: Path, text: str) -> None:
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
 
 

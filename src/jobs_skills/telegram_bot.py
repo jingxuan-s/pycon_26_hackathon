@@ -283,7 +283,8 @@ class TelegramCareerBotService:
             return BotResponse("Upload a resume first with /start_resume.")
         session.pending_text_mode = "add_skill_search"
         return BotResponse(
-            "Type a skill name to add, such as python, data governance, or stakeholder management.",
+            "Type a broad SkillsFuture capability, not only a specific tool or vendor.\n\n"
+            "Examples: Programming and Coding for Python or SQL, Data Storytelling and Visualisation for Power BI or Tableau, Data Governance, or Stakeholder Management.",
             (InlineButton("Back to review", "resume_back_review", ""),),
         )
 
@@ -295,11 +296,11 @@ class TelegramCareerBotService:
         matches = search_skills(self.resume_context.skills, query, limit=5)
         if matches.empty:
             session.pending_text_mode = "add_skill_search"
-            return BotResponse("No matching skill found. Try a broader skill name.", (InlineButton("Back to review", "resume_back_review", ""),))
+            return BotResponse("No matching SkillsFuture skill found. Try a broader capability name such as Programming and Coding, Data Governance, Data Storytelling and Visualisation, or Stakeholder Management.", (InlineButton("Back to review", "resume_back_review", ""),))
         buttons = tuple(InlineButton(str(row.unique_skill_title)[:54], "resume_add_select", str(row.skill_id)) for row in matches.itertuples(index=False)) + (
             InlineButton("Back to review", "resume_back_review", ""),
         )
-        lines = [f"Skill search: {query}", "Choose the skill to add:", ""]
+        lines = [f"Skill search: {query}", "SkillsFuture uses broad capability names. If you searched for a tool or tech stack, choose the closest broader skill below.", "Choose the skill to add:", ""]
         for index, row in enumerate(matches.itertuples(index=False), start=1):
             lines.append(f"{index}. {row.unique_skill_title}")
         return BotResponse("\n".join(lines), buttons)
@@ -933,7 +934,7 @@ class TelegramCareerBotService:
             "",
             "Example: <b>Edit 1</b> changes item 1 in the list below.",
             "",
-            "<b>Add skill</b> searches the SkillsFuture skill list.",
+            "<b>Add skill</b> searches broad SkillsFuture capability names; tools like Python or SQL usually map to Programming and Coding.",
             "<b>Continue</b> confirms this profile for scoring.",
             "<b>Back</b> returns to the previous page.",
             "<b>Back to start</b> goes back to the start of the workflow after confirmation.",
@@ -1182,9 +1183,4 @@ def response_to_dict(response: BotResponse) -> dict[str, Any]:
         "attachment_name": response.attachment_name,
         "has_attachment_content": response.attachment_content is not None,
     }
-
-
-
-
-
 

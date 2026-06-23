@@ -35,6 +35,7 @@ from jobs_skills.related_skills import (
 from jobs_skills.parser_agents import (
     ParserResult,
     ParsedSkillEvidence,
+    TITLE_ALIASES,
     build_target_requirements_from_jd,
     parse_jd_text,
     parse_resume_text,
@@ -107,6 +108,104 @@ class AgentParserConfig:
     enabled: bool
     source: str
     model: str
+
+SKILLSFUTURE_INTERACTIVE_FRAMEWORKS_URL = "https://jobsandskills.skillsfuture.gov.sg/frameworks/interactive-skills-frameworks"
+
+
+MANUAL_SKILL_SEARCH_ALIASES: Mapping[str, tuple[str, ...]] = {
+    "Programming and Coding": (
+        "software programming",
+        "software development",
+        "python programming",
+        "sql queries",
+        "javascript",
+        "typescript",
+        "java",
+        "c sharp",
+        "c#",
+        "c++",
+        "cpp",
+    ),
+    "Business Intelligence and Data Analytics": (
+        "excel",
+        "spreadsheet",
+        "spreadsheets",
+        "pivot table",
+        "power query",
+        "business intelligence",
+    ),
+    "Data Storytelling and Visualisation": (
+        "power bi",
+        "tableau",
+        "looker",
+        "charts",
+        "dashboard",
+        "dashboards",
+    ),
+    "Data Engineering": (
+        "airflow",
+        "dbt",
+        "spark",
+        "data warehouse",
+        "data pipelines",
+    ),
+    "Cloud Computing Application": (
+        "aws",
+        "azure",
+        "gcp",
+        "cloud platform",
+    ),
+    "Cloud Computing Implementation": (
+        "aws",
+        "azure",
+        "gcp",
+        "cloud infrastructure",
+    ),
+    "Software Configuration": (
+        "git",
+        "github",
+        "version control",
+    ),
+    "Agile Software Development": (
+        "scrum",
+        "jira",
+        "kanban",
+    ),
+    "Data Protection Management": (
+        "pdpa",
+        "gdpr",
+        "data privacy",
+    ),
+    "Infocomm Security and Data Privacy": (
+        "pdpa",
+        "gdpr",
+        "data privacy",
+        "privacy",
+    ),
+    "User Interface and User Experience (UI/UX) Optimisation": (
+        "figma",
+        "ui",
+        "ux",
+        "user interface",
+        "user experience",
+    ),
+    "Database Administration": (
+        "mysql",
+        "postgres",
+        "postgresql",
+        "oracle database",
+        "database",
+    ),
+    "Cybersecurity": (
+        "cyber security",
+        "security",
+    ),
+    "Artificial Intelligence Application": (
+        "ai",
+        "llm",
+        "chatgpt",
+    ),
+}
 
 
 def load_resume_workflow_context(project_root: Path) -> ResumeWorkflowContext:
@@ -308,24 +407,68 @@ def search_skills(skills: pd.DataFrame, query: str, limit: int = 8) -> pd.DataFr
     frame = skills.copy()
     normalized_query = _normalize_search_text(query)
     tokens = [token for token in normalized_query.split() if token]
-    frame["search_text"] = (
-        frame["unique_skill_title"].astype(str) + " " + frame.get("unique_skill_description", "").astype(str)
-    ).map(_normalize_search_text)
-    for token in tokens:
-        frame = frame.loc[frame["search_text"].str.contains(token, regex=False, na=False)]
-    if frame.empty:
-        return frame.drop(columns=["search_text"], errors="ignore")
-    frame["normalized_title"] = frame["unique_skill_title"].astype(str).map(_normalize_search_text)
-    frame["rank"] = frame.apply(
-        lambda row: (
-            0 if str(row.normalized_title) == normalized_query else
-            1 if normalized_query in str(row.normalized_title) else
-            2
-        ),
-        axis=1,
-    )
-    return frame.sort_values(["rank", "unique_skill_title"]).head(limit).drop(columns=["search_text", "normalized_title", "rank"])
+    if not tokens:
+        return skills.head(0)
 
+    description = frame["unique_skill_description"].astype(str) if "unique_skill_description" in frame.columns else ""
+    frame["normalized_title"] = frame["unique_skill_title"].astype(str).map(_normalize_search_text)
+    frame["normalized_description"] = description.map(_normalize_search_text) if hasattr(description, "map") else ""
+    frame["parser_alias_text"] = frame["unique_skill_title"].astype(str).map(_skill_search_parser_alias_text)
+    frame["manual_alias_text"] = frame["unique_skill_title"].astype(str).map(_skill_search_manual_alias_text)
+    frame["alias_text"] = (frame["parser_alias_text"].astype(str) + " " + frame["manual_alias_text"].astype(str)).str.strip()
+    frame["search_text"] = (
+        frame["normalized_title"].astype(str) + " "
+        + frame["normalized_description"].astype(str) + " "
+        + frame["alias_text"].astype(str)
+    )
+
+    frame = frame.loc[frame["search_text"].map(lambda text: all(_search_text_contains_phrase(str(text), token) for token in tokens))]
+    if frame.empty:
+        return frame.drop(columns=["search_text", "normalized_title", "normalized_description", "parser_alias_text", "manual_alias_text", "alias_text"], errors="ignore")
+
+    frame["rank"] = frame.apply(lambda row: _skill_search_rank(row, normalized_query, tokens), axis=1)
+    return frame.sort_values(["rank", "unique_skill_title"]).head(limit).drop(
+        columns=["search_text", "normalized_title", "normalized_description", "parser_alias_text", "manual_alias_text", "alias_text", "rank"],
+        errors="ignore",
+    )
+
+def _skill_search_parser_alias_text(title: str) -> str:
+    return " ".join(dict.fromkeys(_normalize_search_text(alias) for alias in TITLE_ALIASES.get(title, ()) if alias))
+
+
+def _skill_search_manual_alias_text(title: str) -> str:
+    return " ".join(dict.fromkeys(_normalize_search_text(alias) for alias in MANUAL_SKILL_SEARCH_ALIASES.get(title, ()) if alias))
+
+
+def _search_text_contains_phrase(text: str, phrase: str) -> bool:
+    if not phrase:
+        return False
+    return re.search(rf"(?<![a-z0-9]){re.escape(phrase)}(?![a-z0-9])", text) is not None
+
+
+def _skill_search_rank(row: Any, normalized_query: str, tokens: Sequence[str]) -> tuple[int, int]:
+    title = str(row.normalized_title)
+    description = str(row.normalized_description)
+    parser_aliases = str(row.parser_alias_text)
+    manual_aliases = str(row.manual_alias_text)
+    aliases = str(row.alias_text)
+    if title == normalized_query:
+        return (0, 0)
+    if _search_text_contains_phrase(manual_aliases, normalized_query):
+        return (1, 0)
+    if _search_text_contains_phrase(parser_aliases, normalized_query):
+        return (2, 0)
+    if _search_text_contains_phrase(title, normalized_query):
+        return (3, 0)
+    manual_token_matches = sum(1 for token in tokens if _search_text_contains_phrase(manual_aliases, token))
+    if manual_token_matches:
+        return (4, -manual_token_matches)
+    alias_token_matches = sum(1 for token in tokens if _search_text_contains_phrase(aliases, token))
+    if alias_token_matches:
+        return (5, -alias_token_matches)
+    if _search_text_contains_phrase(description, normalized_query):
+        return (6, 0)
+    return (7, 0)
 
 def _normalize_search_text(text: str) -> str:
     normalized = _normalize_for_match(str(text))
@@ -674,6 +817,7 @@ def render_result_report_markdown(
         lines.append(f"- Parser note: {note}")
     lines.append(f"- Explainer source: {result.score_explanation.source}")
     lines.append(f"- Explainer model setting: {result.score_explanation.model}")
+    _append_skillsfuture_explore_link(lines)
     return "\n".join(lines) + "\n"
 
 
@@ -692,6 +836,7 @@ def write_result_report(
         encoding="utf-8",
     )
     return output_path
+
 
 def _normal_result_report_lines(
     context: ResumeWorkflowContext,
@@ -750,7 +895,17 @@ def _normal_result_report_lines(
         lines.extend(related_lines)
     lines.extend(["", "## Action Plan", ""])
     lines.extend(_report_action_plan_lines(result.action_plan, related_notes, debug=False))
+    _append_skillsfuture_explore_link(lines)
     return lines
+
+
+def _append_skillsfuture_explore_link(lines: list[str]) -> None:
+    lines.extend([
+        "",
+        "## Explore More Skills",
+        "",
+        f"Visit the SkillsFuture interactive skills frameworks to explore more skills: {SKILLSFUTURE_INTERACTIVE_FRAMEWORKS_URL}",
+    ])
 
 
 def _related_score_report_lines(
@@ -1516,15 +1671,6 @@ def _env_value(names: Iterable[str]) -> str | None:
 
 def pasted_jd_document(text: str) -> ExtractedDocument:
     return document_text_from_pasted_input(text, source_type="pasted_jd")
-
-
-
-
-
-
-
-
-
 
 
 
