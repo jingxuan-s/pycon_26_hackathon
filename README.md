@@ -4,7 +4,8 @@ A Telegram-based career planning assistant that turns public SkillsFuture jobs-s
 
 The product goal is simple: help users understand where they are, where they can go next, why a recommendation was shown, and what they can do to close the gap.
 
-A working demo is hosted and can be accessed via the Telegram bot @pycon26_job_skill_finder_bot.
+~~A working demo is hosted and can be accessed via the Telegram bot @pycon26_job_skill_finder_bot.~~
+Since the hackathon is over, the demo will be stopped but users can spin up their own with the codebase.
 
 ## Problem
 
